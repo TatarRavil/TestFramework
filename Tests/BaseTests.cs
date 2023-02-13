@@ -6,34 +6,24 @@ using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TestFramework.Tests
 {
     public class BaseTests
     {
-        public CommonDriver commonDriver;
-        public LoginPage loginPage;
-
+        public CommonDriver CommonDriver { get; set; }
+        public LoginPage LoginPage { get; set; }
+        public ExtentReportUtils ExtentReportUtils { get; set; }
+        public SreenUtils SreenUtils { get; set; }
+        
         private IConfigurationRoot config;
-
-        public ExtentReportUtils extentReportUtils;
-
-        SreenUtils sreenUtils;
-
-        string baseUrl;
-
-        string currentProjectDirectory;
-        string currentSolutionDirectory;
-
-        string reportFileName;
+        private string baseUrl;
+        private string currentSolutionDirectory;
+        private string reportFileName;
 
         [OneTimeSetUp]
-        public void preSetup()
+        public void PreSetup()
         {
             string workingDirectory = Environment.CurrentDirectory;
             string currentProjectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
@@ -42,24 +32,23 @@ namespace TestFramework.Tests
             config = new ConfigurationBuilder().AddJsonFile(currentProjectDirectory + "//Config//appSettings.json").Build();
 
             reportFileName = currentSolutionDirectory + $"/reports/Test{DateTime.Now}.html";
-            extentReportUtils = new ExtentReportUtils(reportFileName);
-
+            ExtentReportUtils = new ExtentReportUtils(reportFileName);
         }
 
         [SetUp]
         public void SetUp()
         {
-            extentReportUtils.CreateTestCase("SetUp");
+            ExtentReportUtils.CreateTestCase("SetUp");
             string browserType = config["browserType"];
-            commonDriver = new CommonDriver(browserType);
+            CommonDriver = new CommonDriver(browserType);
 
-            extentReportUtils.AddTestLog(Status.Info, "browser type" + browserType);
+            ExtentReportUtils.AddTestLog(Status.Info, "browser type" + browserType);
             baseUrl = config["baseUrl"];
-            extentReportUtils.AddTestLog(Status.Info, "base url" + baseUrl);
-            commonDriver.NavigateToFirstURL(baseUrl);
+            ExtentReportUtils.AddTestLog(Status.Info, "base url" + baseUrl);
+            CommonDriver.NavigateToFirstURL(baseUrl);
 
-            loginPage = new LoginPage(commonDriver.Driver);
-            sreenUtils = new SreenUtils(commonDriver.Driver);
+            LoginPage = new LoginPage(CommonDriver.Driver);
+            SreenUtils = new SreenUtils(CommonDriver.Driver);
         }
 
         [TearDown]
@@ -69,19 +58,19 @@ namespace TestFramework.Tests
 
             if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
             {
-                extentReportUtils.AddTestLog(Status.Fail, "Test Failed.");
-                sreenUtils.GetScreen(screenFileName);
+                ExtentReportUtils.AddTestLog(Status.Fail, "Test Failed.");
+                SreenUtils.GetScreen(screenFileName);
 
-                extentReportUtils.AddScreen(screenFileName);
+                ExtentReportUtils.AddScreen(screenFileName);
             }
 
-            commonDriver.CloseAllBrowsers();
+            CommonDriver.CloseAllBrowsers();
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            extentReportUtils.FlushReport();
+            ExtentReportUtils.FlushReport();
         }
     }
 }

@@ -9,13 +9,13 @@ namespace TestFramework.Tests
         [Test]
         public void VerifyLoginTest() 
         {
-            extentReportUtils.CreateTestCase("Test: Verify Login Test");
+            ExtentReportUtils.CreateTestCase("Test: Verify Login Test");
 
-            extentReportUtils.AddTestLog(Status.Info, "Sing In");
-            loginPage.Login("id750643415", "111222000");
+            ExtentReportUtils.AddTestLog(Status.Info, "Sing In");
+            LoginPage.Login("id750643415", "111222000");
 
             string expectedTittle = "Смотреть Аниме онлайн бесплатно в хорошем качестве";
-            string actualTittle = commonDriver.GetPageTittle();
+            string actualTittle = CommonDriver.GetPageTittle();
 
             Assert.AreEqual(expectedTittle, actualTittle);
         }
